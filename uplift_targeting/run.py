@@ -131,6 +131,8 @@ def main() -> None:
         plots = None
     if plots is not None:
         plots.make_all()
+    from . import demo  # the demo page's data in docs/data/, read back from results/
+    demo.main()
     print(f"Done in {time.time() - start:.0f}s. Results in {config.RESULTS_DIR}")
 
 

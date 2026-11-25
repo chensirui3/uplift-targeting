@@ -3,3 +3,5 @@ __pycache__/
 .pytest_cache/
 # Downloaded by the pipeline (python -m uplift_targeting.run); verified by checksum.
 data/raw/
+# Claude Code's local folder (session worktrees); never committed.
+.claude/

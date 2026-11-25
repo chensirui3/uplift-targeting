@@ -14,6 +14,8 @@ A retailer emailed its recent customers at random. A third got an email featurin
 
 The most useful lesson is the last one. When fewer than 1 customer in 100 buys, a model can look clearly better in cross-validation and still be unproven on new customers. Measuring that honestly is what decides whether targeting is worth paying for. A [replication on 14 million users](#replication-on-14-million-users-criteo) from Criteo's ad experiments is big enough to settle the question there. Targeting clearly beats random, and with that much data, training on the outcome that matters works as well as training on visits.
 
+**[Try the interactive demo →](https://chensirui3.github.io/uplift-targeting/)** Set what an email costs and the margin, pick how many customers to email, and compare the model's picks with random targeting, with every 95% interval shown. A second section does the same for the Criteo replication, where targeting clearly beats random, with each estimate as randomized and reweighted.
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/deciles_visits-dark.png">
   <img alt="Bar chart of the men's email's effect on visits for each tenth of customers ranked by the model. The top tenth gains 12.6 extra visitors per 100; the other nine tenths range from 4.3 to 10.6, around the overall average of 7.3." src="figures/deciles_visits.png" width="820">
@@ -107,7 +109,7 @@ Each uplift learner was trained twice: once on spend directly, and once on visit
 
 Hillstrom's test set was too small to say whether targeting pays (finding 3), and the case for training on visits (finding 4) rests on 38,400 training customers. Both questions can be asked again of [Criteo's uplift dataset](https://ailab.criteo.com/criteo-uplift-prediction-dataset/) (v2.1): 13,979,592 users from randomized advertising experiments, in which a random 15% of users were kept from the advertiser's ads. It records whether each user visited the advertiser's site (4.7%) and whether they converted (0.29%), but not revenue, so conversions stand in for spend. Across all users, ads raised conversions by 59% (+115 per 100,000 users, CI 108 to 122) and visits by 27%.
 
-The protocol is Hillstrom's. The data were split 60/40. The same 18 candidates were compared by 5-fold cross-validation on training data only. The same selection rule, with conversions in place of spend, was committed and saved to [results/criteo/selection.json](results/criteo/selection.json) before the test set was scored. The chosen model was then evaluated once on 5,591,837 held-out users. The test-set stage was later rerun from the saved selection, only to add each tenth's treated share and estimated chance of treatment, and every test-set estimate reproduced exactly. Every number below comes from [results/criteo/](results/criteo).
+The protocol is Hillstrom's. The data were split 60/40. The same 18 candidates were compared by 5-fold cross-validation on training data only. The same selection rule, with conversions in place of spend, was saved to [results/criteo/selection.json](results/criteo/selection.json) before the test set was scored. The chosen model was then evaluated once on 5,591,837 held-out users. The test-set stage was later rerun from the saved selection, only to add each tenth's treated share and estimated chance of treatment, and every test-set estimate reproduced exactly. Every number below comes from [results/criteo/](results/criteo).
 
 - **Targeting beats random by a wide margin, and this time the test is big enough to show it.** The chosen model, an S-learner trained on conversions, finds 72% of the ads' extra conversions (CI 68% to 76%) in the top 10% of users. That is 71 more extra conversions per 100,000 users than a random 10% would get (CI 62 to 81). The test could have detected a gain of 14, and cross-validation had predicted 71.
 - **Training on visits did not help.** On the test set, the best model trained on visits and the best trained on conversions ranked users equally well. The difference in area over random was −0.6 per 100,000 users (CI −2.4 to +1.4), while the test could have detected 2.7. Hillstrom's lesson to model the frequent outcome does not carry over to a training set with about 24,500 conversions.
@@ -179,7 +181,7 @@ The comparisons barely move, because they pit models against each other on the s
 - **Evaluating a policy without trusting a model.** Emails were assigned at random, so the outcome of any targeting rule can be estimated directly from the data. For each email, average the outcomes of the customers who happened to receive what the rule would have sent them, then add up across emails. This is the stratified inverse-propensity estimator ([evaluation.py](uplift_targeting/evaluation.py)). A unit test checks that it is unbiased in simulation.
 - **Model selection fixed before testing.** The data was split 60/40 into train and test, stratified by email and purchase. 18 candidates were compared by 5-fold cross-validation on the training set only: S-, T-, X- and DR-learners (Künzel et al. 2019; Kennedy 2023), each trained on spend or on visits at two levels of regularization, plus a response model at both levels. The rule, written down before testing: pick the uplift model with the largest area between its men's-email uplift curve and the random-targeting line. The winner was an S-learner on visits, evaluated once on the test set.
 - **Uncertainty.** 2,000 bootstrap resamples drawn within each email group. Resamples are shared across models, so every difference between models gets its own interval.
-- **Checks.** The randomization is balanced (largest standardized mean difference between groups: 0.014). The download is verified by checksum. 35 unit tests include learners recovering a known effect, a response model preferring "sure things" where uplift models don't, and the uplift curve matching an independent implementation (scikit-uplift).
+- **Checks.** The randomization is balanced (largest standardized mean difference between groups: 0.014). The download is verified by checksum. 39 unit tests include learners recovering a known effect, a response model preferring "sure things" where uplift models don't, and the uplift curve matching an independent implementation (scikit-uplift).
 
 ## Limitations
 
@@ -226,7 +228,7 @@ uplift_targeting/
   run.py           end-to-end pipeline
   criteo.py        the Criteo replication, end to end
   criteo_plots.py  its charts
-tests/             35 unit tests, all on simulated data
+tests/             39 unit tests, on simulated data and the committed results
 results/           every number above (results/criteo/ for the replication)
 figures/           every chart above (figures/criteo/ for the replication)
 ```
