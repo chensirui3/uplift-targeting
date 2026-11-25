@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Who should get the email?</title>
+  <meta name="description" content="Interactive results of an uplift-modeling study on a randomized email experiment, with a replication on Criteo's ad experiments. Set what an email costs and the margin, pick how many customers to target, and see who the model would choose.">
+  <meta property="og:title" content="Who should get the email?">
+  <meta property="og:description" content="Uplift modeling on a randomized email experiment and Criteo's ad experiments: whose behavior does a promotion change, and is it worth targeting them?">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='7' width='26' height='18' rx='3' fill='%232a78d6'/%3E%3Cpath d='M6 10.5l10 7 10-7' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <!-- The headline: plain wording with no numbers in it, so it can be edited freely. -->
+  <header class="wrap masthead">
+    <p class="eyebrow">Uplift modeling &middot; randomized experiments</p>
+    <h1>Who should get the email?</h1>
+    <p class="lede">A retailer emailed its recent customers at random. A third got an email featuring men's merchandise, a third got one featuring women's merchandise, and a third got nothing. Because the groups were random, the data can show whose behavior the email <em>changed</em>, not just who was going to buy anyway. A replication on Criteo's much larger ad experiments asks the same questions with a test big enough to answer them. Set the economics, pick a budget, and check the answers yourself.</p>
+    <p class="links"><a href="https://github.com/chensirui3/uplift-targeting">Full write-up and code on GitHub &rarr;</a></p>
+  </header>
+
+  <main class="wrap">
+    <p class="load-error" id="page-error" hidden>Couldn't load the page's charting library. Check the connection and reload.</p>
+
+    <!-- Each dataset below adds its own group of bullets here, in page order. -->
+    <section class="card answer" aria-labelledby="answer-heading">
+      <h2 id="answer-heading">The short answer</h2>
+      <div id="summary"></div>
+    </section>
+
+    <!-- One <article> per dataset. It reads only its own data file (data-src) and is drawn by
+         js/<data-dataset>.js, which looks up elements inside the article by data-el. To add a
+         dataset: list its export in uplift_targeting/demo.py, write its module in js/, register
+         the module in app.js, and add an article like this one. -->
+    <article class="dataset" data-dataset="hillstrom" data-src="data/hillstrom.json" aria-labelledby="hillstrom-heading">
+      <header class="dataset-head">
+        <h2 id="hillstrom-heading">The email experiment</h2>
+        <p class="dataset-meta"><span data-el="customers"></span> customers, emailed at random. Data: Kevin Hillstrom's MineThatData e-mail analytics challenge (2008).</p>
+      </header>
+      <p class="load-error" data-el="error" hidden>Couldn't load data/hillstrom.json. Open this page through a web server (for example GitHub Pages, or <code>python -m http.server --directory docs</code>), not as a local file.</p>
+
+      <section aria-labelledby="hillstrom-everyone">
+        <h3 id="hillstrom-everyone">Should everyone get the men's email?</h3>
+        <p class="section-lede" data-el="everyone-lede"></p>
+        <div class="split">
+          <div class="panel">
+            <div class="sliders">
+              <div class="slider" data-el="cost-slider">
+                <div class="slider-head"><label for="hillstrom-cost">Cost per email</label><output for="hillstrom-cost"></output></div>
+                <input type="range" id="hillstrom-cost">
+                <div class="ends"><span></span><span></span></div>
+              </div>
+              <div class="slider" data-el="margin-slider">
+                <div class="slider-head"><label for="hillstrom-margin">Margin on extra revenue</label><output for="hillstrom-margin"></output></div>
+                <input type="range" id="hillstrom-margin">
+                <div class="ends"><span></span><span></span></div>
+              </div>
+            </div>
+            <div class="result" aria-live="polite">
+              <div class="hero-row"><span class="hero" data-el="profit-hero">&nbsp;</span><span class="hero-unit">profit per 1,000 customers emailed</span></div>
+              <p class="ci" data-el="profit-ci"></p>
+              <p class="verdict" data-el="profit-verdict"></p>
+            </div>
+          </div>
+          <figure class="card">
+            <figcaption>
+              <span class="fig-title" data-el="profit-title"></span>
+              <span class="fig-sub">Profit per 1,000 customers from emailing all of them, at each cost per email. Shaded: 95% interval. Click the chart to set the cost.</span>
+            </figcaption>
+            <div data-el="profit-chart" class="chart" role="img"></div>
+            <details>
+              <summary>Show the numbers</summary>
+              <div class="table-scroll"><table data-el="profit-table"></table></div>
+            </details>
+          </figure>
+        </div>
+        <aside class="callout" aria-labelledby="hillstrom-sweep">
+          <h4 id="hillstrom-sweep">Would skipping some customers earn more?</h4>
+          <p data-el="sweep-text" aria-live="polite"></p>
+          <details>
+            <summary>Show every cost</summary>
+            <div class="table-scroll"><table data-el="sweep-table"></table></div>
+          </details>
+        </aside>
+      </section>
+
+      <section aria-labelledby="hillstrom-budget">
+        <h3 id="hillstrom-budget">If you can email only some customers, which ones?</h3>
+        <p class="section-lede" data-el="budget-lede"></p>
+        <div class="budget-controls">
+          <div class="slider" data-el="budget-slider">
+            <div class="slider-head"><label for="hillstrom-budget-input">Customers emailed, best-ranked first</label><output for="hillstrom-budget-input"></output></div>
+            <input type="range" id="hillstrom-budget-input">
+            <div class="ends"><span></span><span></span></div>
+          </div>
+          <div class="chips" data-el="budget-chips" role="group" aria-label="Budgets with paired comparisons"></div>
+        </div>
+        <div class="pair">
+          <figure class="card">
+            <figcaption>
+              <span class="fig-title" data-el="spend-title"></span>
+              <span class="fig-sub">Dollars per 1,000 held-out customers when only the top-ranked share is emailed. Shaded: 95% interval for the uplift model.</span>
+            </figcaption>
+            <div class="readout" data-el="spend-readout" aria-live="polite"></div>
+            <div data-el="spend-chart" class="chart" role="img"></div>
+            <details>
+              <summary>Show the numbers</summary>
+              <div class="table-scroll"><table data-el="spend-table"></table></div>
+            </details>
+          </figure>
+          <figure class="card">
+            <figcaption>
+              <span class="fig-title" data-el="visits-title"></span>
+              <span class="fig-sub">Visitors per 1,000 held-out customers when only the top-ranked share is emailed. Shaded: 95% interval for the uplift model.</span>
+            </figcaption>
+            <div class="readout" data-el="visits-readout" aria-live="polite"></div>
+            <div data-el="visits-chart" class="chart" role="img"></div>
+            <details>
+              <summary>Show the numbers</summary>
+              <div class="table-scroll"><table data-el="visits-table"></table></div>
+            </details>
+          </figure>
+        </div>
+        <div class="split even">
+          <div class="card">
+            <h4 class="card-title">Gain over random targeting</h4>
+            <p class="fig-sub">Uplift model minus random targeting at the same budget, per 1,000 held-out customers, with paired 95% intervals. These were computed at three budgets.</p>
+            <div class="table-scroll flat"><table data-el="gain-table" class="gain"></table></div>
+            <p class="verdict small" data-el="gain-verdict"></p>
+          </div>
+          <aside class="callout tight" aria-labelledby="hillstrom-power">
+            <h4 id="hillstrom-power">Why can't the test tell?</h4>
+            <p data-el="power-text"></p>
+          </aside>
+        </div>
+      </section>
+
+      <section aria-labelledby="hillstrom-who">
+        <h3 id="hillstrom-who">Who are the persuadable customers?</h3>
+        <p class="section-lede" data-el="who-lede"></p>
+        <form class="controls" aria-label="Outcome">
+          <fieldset class="seg">
+            <legend>Outcome</legend>
+            <div class="opts" data-el="decile-outcome">
+              <label><input type="radio" name="hillstrom-deciles" value="visit"><span>Visits</span></label>
+              <label><input type="radio" name="hillstrom-deciles" value="spend"><span>Revenue</span></label>
+            </div>
+          </fieldset>
+        </form>
+        <div class="split halves">
+          <figure class="card">
+            <figcaption>
+              <span class="fig-title" data-el="decile-title"></span>
+              <span class="fig-sub" data-el="decile-sub"></span>
+            </figcaption>
+            <div data-el="decile-chart" class="chart" role="img"></div>
+            <details>
+              <summary>Show the numbers</summary>
+              <div class="table-scroll"><table data-el="decile-table"></table></div>
+            </details>
+          </figure>
+          <figure class="card">
+            <figcaption>
+              <span class="fig-title">Who the top 10% are</span>
+              <span class="fig-sub" data-el="profile-sub"></span>
+            </figcaption>
+            <div class="table-scroll flat"><table data-el="profile-table" class="profile"></table></div>
+          </figure>
+        </div>
+      </section>
+
+      <section class="notes" aria-labelledby="hillstrom-notes">
+        <h3 id="hillstrom-notes">How to read this</h3>
+        <ul data-el="notes"></ul>
+      </section>
+    </article>
+
+    <article class="dataset" data-dataset="criteo" data-src="data/criteo.json" aria-labelledby="criteo-heading">
+      <header class="dataset-head">
+        <h2 id="criteo-heading">Replication on Criteo's ad experiments</h2>
+        <p class="dataset-meta"><span data-el="users"></span> users in randomized advertising experiments, <span data-el="control-share"></span> of them kept from the ads. Data: <a href="https://ailab.criteo.com/criteo-uplift-prediction-dataset/">Criteo Uplift Prediction Dataset</a> v2.1 (Diemert, Betlei, Renaudin and Amini, AdKDD 2018), licensed CC BY-NC-SA 4.0. This page shows numbers computed from it, not the data.</p>
+      </header>
+      <p class="load-error" data-el="error" hidden>Couldn't load data/criteo.json. Open this page through a web server (for example GitHub Pages, or <code>python -m http.server --directory docs</code>), not as a local file.</p>
+      <p class="section-lede" data-el="intro"></p>
+
+      <!-- One control for every estimate in this article. -->
+      <aside class="callout estimate-box" aria-labelledby="criteo-caveat">
+        <h4 id="criteo-caveat">Treatment is not quite independent of the features</h4>
+        <p data-el="caveat-text"></p>
+        <form class="controls" aria-label="Estimate">
+          <fieldset class="seg">
+            <legend>Show estimates</legend>
+            <div class="opts" data-el="estimator">
+              <label><input type="radio" name="criteo-estimator" value="as_randomized"><span>As randomized</span></label>
+              <label><input type="radio" name="criteo-estimator" value="reweighted"><span>Reweighted</span></label>
+            </div>
+          </fieldset>
+        </form>
+      </aside>
+
+      <section aria-labelledby="criteo-budget">
+        <h3 id="criteo-budget">Does targeting beat random here?</h3>
+        <p class="section-lede" data-el="budget-lede"></p>
+        <div class="budget-controls">
+          <div class="slider" data-el="budget-slider">
+            <div class="slider-head"><label for="criteo-budget-input">Users shown ads, best-ranked first</label><output for="criteo-budget-input"></output></div>
+            <input type="range" id="criteo-budget-input">
+            <div class="ends"><span></span><span></span></div>
+          </div>
+          <div class="chips" data-el="budget-chips" role="group" aria-label="Budgets with paired comparisons"></div>
+        </div>
+        <div class="pair">
+          <figure class="card">
+            <figcaption>
+              <span class="fig-title" data-el="curve-title"></span>
+              <span class="fig-sub">Extra conversions per 100,000 held-out users when only the top-ranked share is shown ads. Shaded: 95% interval for the uplift model.</span>
+            </figcaption>
+            <div class="readout" data-el="readout" aria-live="polite"></div>
+            <div data-el="curve-chart" class="chart" role="img"></div>
+            <details>
+              <summary>Show the numbers</summary>
+              <div class="table-scroll"><table data-el="curve-table"></table></div>
+            </details>
+          </figure>
+          <div class="card">
+            <h4 class="card-title">Gain over random targeting</h4>
+            <p class="fig-sub" data-el="gain-sub"></p>
+            <div class="table-scroll flat"><table data-el="gain-table" class="gain"></table></div>
+            <p class="verdict small" data-el="gain-verdict"></p>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="criteo-who">
+        <h3 id="criteo-who">Where the ads work</h3>
+        <p class="section-lede" data-el="who-lede"></p>
+        <figure class="card">
+          <figcaption>
+            <span class="fig-title" data-el="decile-title"></span>
+            <span class="fig-sub" data-el="decile-sub"></span>
+          </figcaption>
+          <div data-el="decile-chart" class="chart" role="img"></div>
+          <details>
+            <summary>Show the numbers</summary>
+            <div class="table-scroll"><table data-el="decile-table"></table></div>
+          </details>
+        </figure>
+      </section>
+
+      <section aria-labelledby="criteo-outcome">
+        <h3 id="criteo-outcome">Does training on visits help here?</h3>
+        <p class="section-lede" data-el="outcome-lede"></p>
+        <form class="controls" aria-label="Budget for the comparison">
+          <fieldset class="seg">
+            <legend>Compare at</legend>
+            <div class="opts" data-el="measure">
+              <label><input type="radio" name="criteo-measure" value="area"><span>All budgets</span></label>
+              <label><input type="radio" name="criteo-measure" value="10pct"><span>Top 10%</span></label>
+              <label><input type="radio" name="criteo-measure" value="30pct"><span>Top 30%</span></label>
+            </div>
+          </fieldset>
+        </form>
+        <figure class="card">
+          <figcaption>
+            <span class="fig-title">Paired differences between the best model of each kind</span>
+            <span class="fig-sub">Difference in gain over random targeting, with 95% intervals. Zero means the two rank users equally well; "all budgets" averages over every share of users shown ads.</span>
+          </figcaption>
+          <div data-el="diff-chart" class="chart" role="img"></div>
+          <p class="verdict small" data-el="diff-verdict" aria-live="polite"></p>
+          <details>
+            <summary>Show the numbers</summary>
+            <div class="table-scroll"><table data-el="model-table"></table></div>
+          </details>
+        </figure>
+      </section>
+
+      <section class="notes" aria-labelledby="criteo-notes">
+        <h3 id="criteo-notes">How to read this</h3>
+        <ul data-el="notes"></ul>
+      </section>
+    </article>
+  </main>
+
+  <footer class="wrap footer">
+    <p>Every number on this page comes from the repository's <code>results/</code> folder, exported by <code>python -m uplift_targeting.demo</code>. Nothing is estimated in your browser: the page only does arithmetic on those numbers, such as the profit at the cost and margin you set. Code: <a href="https://github.com/chensirui3/uplift-targeting">github.com/chensirui3/uplift-targeting</a>, MIT License.</p>
+  </footer>
+
+  <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+</body>
+</html>

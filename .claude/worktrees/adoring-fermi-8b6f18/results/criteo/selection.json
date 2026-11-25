@@ -1,0 +1,8 @@
+{
+  "rule": "Pick the uplift model whose out-of-fold predictions give the largest area between the conversion uplift curve and the random-targeting line. Cross-validation: 5 folds on a stratified subsample of the training set (cv_users), comparing treated and control users directly, as the experiment's design intends.",
+  "cv_users": 2000000,
+  "chosen": "S-learner | conversion | flexible",
+  "best_visits": "S-learner | visits | conservative",
+  "best_conversion": "S-learner | conversion | flexible",
+  "best_response": "Response model | conversion | flexible"
+}

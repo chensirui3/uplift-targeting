@@ -1,0 +1,17 @@
+segment,email,outcome,effect,lo,hi,customers
+bought men's only,Men's email,spend,0.60576,-0.09874,1.31026,11476
+bought men's only,Men's email,visit,0.0632,0.04789,0.0785,11476
+bought men's only,Women's email,spend,0.5891,-0.14456,1.32275,11476
+bought men's only,Women's email,visit,0.00627,-0.00761,0.02015,11476
+bought women's only,Men's email,spend,0.52831,-0.05584,1.11246,11569
+bought women's only,Men's email,visit,0.06883,0.05387,0.08379,11569
+bought women's only,Women's email,spend,0.65846,0.04424,1.27268,11569
+bought women's only,Women's email,visit,0.07588,0.06077,0.09098,11569
+bought both,Men's email,spend,0.70832,-1.23972,2.65637,2555
+bought both,Men's email,visit,0.13099,0.09023,0.17175,2555
+bought both,Women's email,spend,-0.67874,-2.1164,0.75892,2555
+bought both,Women's email,visit,0.09292,0.0534,0.13244,2555
+everyone,Men's email,spend,0.58723,0.13295,1.04152,25600
+everyone,Men's email,visit,0.0732,0.06271,0.0837,25600
+everyone,Women's email,spend,0.49651,0.04516,0.94786,25600
+everyone,Women's email,visit,0.04751,0.0374,0.05762,25600

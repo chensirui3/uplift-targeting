@@ -1,0 +1,81 @@
+{
+  "users": 13979592,
+  "treated_share": 0.85,
+  "visit_rate": 0.046992,
+  "conversion_rate": 0.002917,
+  "published": {
+    "users": 13979592,
+    "treated_share": 0.85,
+    "visit_rate": 0.046992,
+    "conversion_rate": 0.00292
+  },
+  "arms": {
+    "Control (no ads)": {
+      "users": 2096937,
+      "conversion_rate": 0.001938,
+      "visit_rate": 0.038201
+    },
+    "Treated (ads)": {
+      "users": 11882655,
+      "conversion_rate": 0.003089,
+      "visit_rate": 0.048543
+    }
+  },
+  "effects": {
+    "conversion": {
+      "per_100k": 115.187305,
+      "ci_per_100k": [
+        108.450455,
+        121.924155
+      ],
+      "relative": 0.594488
+    },
+    "visit": {
+      "per_100k": 1034.240313,
+      "ci_per_100k": [
+        1005.562294,
+        1062.918331
+      ],
+      "relative": 0.270737
+    }
+  },
+  "conversions_without_a_visit": 0,
+  "max_abs_standardized_mean_difference": 0.048836,
+  "standardized_mean_difference": {
+    "f0": 0.006866,
+    "f1": 0.023994,
+    "f2": 0.006241,
+    "f3": 0.048836,
+    "f4": 0.007966,
+    "f5": 0.030557,
+    "f6": 0.040448,
+    "f7": 0.02127,
+    "f8": 0.022433,
+    "f9": 0.024001,
+    "f10": 0.010563,
+    "f11": 0.00516
+  },
+  "propensity_check": {
+    "auc": 0.510396,
+    "auc_null_se": 0.000279,
+    "propensity_quantiles": {
+      "0": 0.713695,
+      "0.001": 0.837464,
+      "0.01": 0.844439,
+      "0.5": 0.848402,
+      "0.99": 0.896297,
+      "0.999": 0.938422,
+      "1": 0.984588
+    },
+    "training_effects_per_100k": {
+      "conversion": {
+        "as_randomized": 115.176989,
+        "reweighted": 96.212603
+      },
+      "visit": {
+        "as_randomized": 1042.271026,
+        "reweighted": 752.518089
+      }
+    }
+  }
+}

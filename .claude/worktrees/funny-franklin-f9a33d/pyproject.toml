@@ -1,0 +1,14 @@
+[project]
+name = "uplift-targeting"
+version = "1.0.0"
+description = "Who should get the email? Uplift modeling on a 64,000-customer randomized email experiment."
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+filterwarnings = [
+    # scikit-uplift (used only to cross-check a metric in the tests) calls a
+    # scikit-learn helper that is deprecated.
+    "ignore:Function stable_cumsum is deprecated:FutureWarning",
+]

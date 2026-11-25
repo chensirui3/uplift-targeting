@@ -1,0 +1,6 @@
+{
+  "rule": "Pick the uplift model whose out-of-fold predictions give the largest area between the men's-email uplift curve (incremental spend) and the random-targeting line.",
+  "chosen": "S-learner | visits | flexible",
+  "best_response": "Response model | spend | conservative",
+  "best_spend_uplift": "S-learner | spend | conservative"
+}
